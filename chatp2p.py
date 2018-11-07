@@ -13,8 +13,8 @@ name = ""
 s = None
 def createProfile():
 	print("what's your name ?")
-	name = input()
-
+	name = raw_input()
+	print("hello "+name)
 def isCorrectIp(ip):
 	print(ip)
 	ip = int(ip)
@@ -26,12 +26,16 @@ def isCorrectIp(ip):
 
 def createServ():
 	s = socket(AF_INET, SOCK_STREAM)
-	print(gethostbyname(gethostname()))
-	s.bind((gethostbyname(gethostname()), 1664)) #changer l'ip on a 127.0.0.1 au lieu de 10.0.0.1
+	print(s.getsockname())
+	s.bind((s.getsockname(), 1664)) #changer l'ip on a 127.0.0.1 au lieu de 10.0.0.1
+	serv = socket()
+	serv.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+	serv.bind(('0.0.0.0',1664))
+	serv.listen(5)
 
 def quit():
 	#quitte le serveur
-	print("ok")
+	exit()
 
 def sendMsg(dest,msg):
         for i in socks:
@@ -47,12 +51,15 @@ def sendMsgBroadcast(msg):
 	print("ok")
 
 def init():
+	#creer socket qui ecoute
+	createServ()
 	if len(argv) > 1:
 		print("ip")
 		createServ()
-		sendMsg()
 	else:
 		print("pas d'ip")
+		
+		
 
 def start():
 	createProfile()
@@ -65,25 +72,21 @@ def start():
 		for s in lin:
 			if s==stdin :
 				data = stdin.readline().strip("\n")
-				print ("entrée clavier : %s" % data)
+				print ("entree clavier : %s" % data)
 
-
-		entry = raw_input()
-		arg = entry.split(" ")
-		nb = len(arg)
-		print(name)
-		if arg[0] == "quit":
+		if data == "quit":
 			quit()
-		elif arg[0] == "pm":
+		elif data == "pm":
 			sendMsgBroadcast(arg[1],arg[2])
-		elif	arg[0] == "bm":
+		elif	data == "bm":
 			sendMsg()
-		elif	arg[0] == "ban":
+		elif	data == "ban":
 			print("ban")
-		elif	arg[0] == "unban":
+		elif	data == "unban":
 			print("unban")
 
-
-
 start()
+
+
+
 

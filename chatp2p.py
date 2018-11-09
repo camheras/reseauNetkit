@@ -13,6 +13,7 @@ name = ""
 s = None
 ban = [] #Les bannis, on verifie ici avant de 
 user = []
+serv = socket()
 
 class User: #associe une ip a un nickname
 	def __init__(self,addr,name):
@@ -38,28 +39,25 @@ def isCorrectIp(ip):
 
 def ban(user,ban):
 	if(user in ban):
-		print("deja blacklisté")
+		print("deja blackliste")
 	else:
 		ban.append(user)
-		print (user.nickname +" avec l'ip "+user.addr+" a bien été blacklisté" )
+		print (user.nickname +" avec l'ip "+user.addr+" a bien ete blackliste" )
 
 def unban(user,ban):
 	if(user in ban):
 		ban.remove(user)
-		print (user.nickname +" avec l'ip "+user.addr+" est débloqué" )
+		print (user.nickname +" avec l'ip "+user.addr+" est debloque" )
 	else:
-		print("n'est pas bloqué")
+		print("n'est pas bloque")
 		
 
 
 def createServ():
-	s = socket(AF_INET, SOCK_STREAM)
-	print(s.getsockname())
-	s.bind((s.getsockname(), 1664)) #changer l'ip on a 127.0.0.1 au lieu de 10.0.0.1
-	serv = socket()
 	serv.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 	serv.bind(('0.0.0.0',1664))
 	serv.listen(5)
+	
 
 def quit():
 	#quitte le serveur
@@ -81,11 +79,11 @@ def sendMsgBroadcast(msg):
 def init():
 	#creer socket qui ecoute
 	createServ()
-	if len(argv) = 1:
+	if len(argv) == 2:
 		print("ip")
 		createServ()
 
-	if len(argv) = 0:
+	if len(argv) == 1:
 		print ("Pas d'ip!")
 	else:
 		print("Nombres d'arguments incorects")
@@ -100,11 +98,18 @@ def start():
 	while 1:
 		if data == "exit":
 			break
-		lin, lout, lex =select([stdin],[],[])
+		
+		sc,addr = serv.accept()
+		lin, lout, lex =select([serv],[],[],0.1)
+		print("aaa")
 		for s in lin:
 			if s==stdin :
 				data = stdin.readline().strip("\n")
 				print ("entree clavier : %s" % data)
+		for s in lout:
+			print("test")
+			d = s.recv(1024).decode("ascii")
+			print(d)
 
 		if data == "quit":
 			quit()
@@ -116,8 +121,9 @@ def start():
 			print("ban")
 		elif	data == "unban":
 			print("unban")
+		else:
+			print("la commande n'est pas reconnue")
 
 start()
-
 
 

@@ -8,13 +8,25 @@ from select import *
 from sys import argv
 from sys import stdin
 
-socks = []
+socks = [] #Pourquoi ?
 name = ""
 s = None
+ban = [] #Les bannis, on verifie ici avant de 
+user = []
+
+class User: #associe une ip a un nickname
+	def __init__(self,addr,name):
+		self.nickname = name
+		self.addr = addr[0]
+
+	def __str__(self):
+		return("(" +self.name + "@" + self.addr + ")")	
+
 def createProfile():
 	print("what's your name ?")
 	name = raw_input()
 	print("hello "+name)
+
 def isCorrectIp(ip):
 	print(ip)
 	ip = int(ip)
@@ -23,6 +35,22 @@ def isCorrectIp(ip):
 	else:
 		quit()
 		return False
+
+def ban(user,ban):
+	if(user in ban):
+		print("deja blacklisté")
+	else:
+		ban.append(user)
+		print (user.nickname +" avec l'ip "+user.addr+" a bien été blacklisté" )
+
+def unban(user,ban):
+	if(user in ban):
+		ban.remove(user)
+		print (user.nickname +" avec l'ip "+user.addr+" est débloqué" )
+	else:
+		print("n'est pas bloqué")
+		
+
 
 def createServ():
 	s = socket(AF_INET, SOCK_STREAM)
@@ -53,11 +81,15 @@ def sendMsgBroadcast(msg):
 def init():
 	#creer socket qui ecoute
 	createServ()
-	if len(argv) > 1:
+	if len(argv) = 1:
 		print("ip")
 		createServ()
+
+	if len(argv) = 0:
+		print ("Pas d'ip!")
 	else:
-		print("pas d'ip")
+		print("Nombres d'arguments incorects")
+		quit();
 		
 		
 
@@ -86,7 +118,6 @@ def start():
 			print("unban")
 
 start()
-
 
 
 

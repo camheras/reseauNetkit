@@ -63,9 +63,12 @@ def quit():
 	#quitte le serveur
 	exit()
 
-def sendMsg(dest,msg):
+def sendMsg(dest,msg,TYPE):
         for i in socks:
                 if i == argv[1]: #il y a une socket qui pointe vers l'ip destination
+                        send(TYPE, msg)
+
+                         ip
                         print("")
                 else:
                         print("")
@@ -80,8 +83,11 @@ def init():
 	#creer socket qui ecoute
 	createServ()
 	if len(argv) == 2:
-		print("ip")
-		createServ()
+		print("ip"+argv[0])
+		createServ()#ppour l'ecoute
+		#create socket pour client on l'appelle s
+		s.connect((argv[0], 1664))
+		s.send("HELLO")
 
 	if len(argv) == 1:
 		print ("Pas d'ip!")
@@ -125,5 +131,4 @@ def start():
 			print("la commande n'est pas reconnue")
 
 start()
-
 

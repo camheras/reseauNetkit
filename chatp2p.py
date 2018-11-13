@@ -11,8 +11,8 @@ from sys import stdin
 socks = [] #Pourquoi ?
 name = ""
 s = None
-ban = [] #Les bannis, on verifie ici avant de 
-user = []
+ban = [] #Les bannis, on verifie ici avant de recevoir 
+users = []#Liste des users connus
 serv = socket()
 
 class User: #associe une ip a un nickname
@@ -22,6 +22,25 @@ class User: #associe une ip a un nickname
 
 	def __str__(self):
 		return("(" +self.name + "@" + self.addr + ")")	
+
+	def __sendMsg__(self,dest,msg,type):#Le 1229 c'est pas des erreurs destress
+		#Je ne suis pas sur de la syntaxe du send
+		if type == 1 :
+			send(1229,dest):#SEND HELLO
+
+		if type == 2 :
+			send(2229,self.nickname,dest)
+
+		if type == 3 :#TODO
+			ips = ''.join(str(ips) for e in this.users)#Je veux recuperer le champ ip des users cette facon recupere les users en entier
+			send(3229, ips,dest)
+
+		if type == 4 :
+	 		send(4229,msg,dest)
+
+	 	if type == 5 :
+	 		sendMsgBroadcast(msg)
+
 
 def createProfile():
 	print("what's your name ?")
@@ -63,16 +82,6 @@ def quit():
 	#quitte le serveur
 	exit()
 
-def sendMsg(dest,msg,TYPE):
-        for i in socks:
-                if i == argv[1]: #il y a une socket qui pointe vers l'ip destination
-                        send(TYPE, msg)
-
-                         ip
-                        print("")
-                else:
-                        print("")
-        print("ok")
 
 def sendMsgBroadcast(msg):
 	for s in socks:
@@ -131,4 +140,3 @@ def start():
 			print("la commande n'est pas reconnue")
 
 start()
-

@@ -32,7 +32,10 @@ class User: #associe une ip a un nickname
 			send(2229,self.nickname,dest)
 
 		if type == 3 :#TODO
-			ips = ''.join(str(ips) for e in this.users)#Je veux recuperer le champ ip des users cette facon recupere les users en entier
+			ips =""
+			for x in this.users
+				ips = ips + x.addr  
+				
 			send(3229, ips,dest)
 
 		if type == 4 :

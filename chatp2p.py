@@ -45,7 +45,7 @@ class User:  # associe une ip a un nickname
             self.sendMsg(self, sc, " ", 3)
 
         if str[0] < 2000 and str[0] < 3000:  # hello
-        # bah cool
+            print ()# bah cool
 
         if str[0] < 3000 and str[0] < 4000:  # ips
             for ip in msg[1].split(","):
@@ -55,6 +55,7 @@ class User:  # associe une ip a un nickname
                 self.afficher(str[1])
         # check ban
         if str[0] < 5000 and str[0] < 6000:  # bm
+            print("Un message est arrivé en broadcast")
 
     # todo
     # check ban
@@ -75,7 +76,7 @@ class User:  # associe une ip a un nickname
 
         if type == 3:  # TODO
             ips = ""
-            for x in this.users
+            for x in self.users :
                 ips = x.addr + " ," + ips
 
             message = (3229 + "\001" + ips)
@@ -124,11 +125,10 @@ def unban(user, ban):
         print("n'est pas bloque")
 
 
-def createServ():#fini
-	serv.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-	serv.bind(('0.0.0.0',1664))
-	serv.listen(5)
-	socks.append(serv)
+def createServ():
+    serv.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+    serv.bind(('0.0.0.0', 1664))
+    serv.listen(5)
 
 
 def quit():
@@ -138,7 +138,8 @@ def quit():
 
 def sendMsgBroadcast(msg):
     for s in socks:
-        sendMsg(s, msg)
+        print("Hey")
+        #sendMsg(s, msg)
     print("ok")
 
 
@@ -155,11 +156,7 @@ def init():
 		socks.append(s)
 		s.send("START")
 
-	elif len(argv) == 1:
-		print ("Pas d'ip!")
-	else:
-		print("Nombres d'arguments incorects")
-		quit();
+
 
 def start():
     createProfile()
@@ -178,7 +175,7 @@ def start():
                 print ("entree clavier : %s" % data)
         for s in lout:
             print("test")
-            d = s.recv(1024).decode(utf - 8)
+            d = s.recv(1024).decode('utf-8')
             print(d)
             handle(d, s)
 

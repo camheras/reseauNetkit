@@ -124,10 +124,11 @@ def unban(user, ban):
         print("n'est pas bloque")
 
 
-def createServ():
-    serv.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-    serv.bind(('0.0.0.0', 1664))
-    serv.listen(5)
+def createServ():#fini
+	serv.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+	serv.bind(('0.0.0.0',1664))
+	serv.listen(5)
+	socks.append(serv)
 
 
 def quit():

@@ -11,38 +11,50 @@ from sys import stdin
 socks = [] #Pourquoi ?
 name = ""
 s = None
-ban = [] #Les bannis, on verifie ici avant de recevoir 
-users = []#Liste des users connus
 serv = socket()
 
 class User: #associe une ip a un nickname
 	def __init__(self,addr,name):
 		self.nickname = name
 		self.addr = addr[0]
+		self.users = []#Liste des User connus
+		self.ban = [] #Les bannis, on verifie ici avant de recevoir 
+
 
 	def __str__(self):
 		return("(" +self.name + "@" + self.addr + ")")	
 
-	def __sendMsg__(self,dest,msg,type):#Le 1229 c'est pas des erreurs destress
+	def sendMsg(self,socket,msg,type):#Le 1229 c'est pas des erreurs destress
 		#Je ne suis pas sur de la syntaxe du send
 		if type == 1 :
-			send(1229,dest):#SEND HELLO
+			message = ""
+			message =1229+"\001"+self.nickname#SEND START
+			buf = message.encode('utf-8')
+			socket.send(buf)
 
-		if type == 2 :
-			send(2229,self.nickname,dest)
+		if type == 2 :#send nickname de l'interlocuteur, il faurait avoir mis dans le msg le nickname du receptioniste
+			message = ""
+			message = 2229+"\001"+msg
+			buf = message.encode('utf-8')
+			socket.send(buf)			
 
 		if type == 3 :#TODO
 			ips =""
 			for x in this.users
-				ips = ips + x.addr  
+				ips = x.addr  +" ," + ips 
 				
-			send(3229, ips,dest)
+			message=(3229+"\001"+ ips)
+			buf = message.encode('utf-8')
+			socket.send(buf)
 
-		if type == 4 :
-	 		send(4229,msg,dest)
+		if type == 4 :#Send PM
+			message =""
+	 		message = 4229+"\001"+msg
+			buf = message.encode('utf-8')
+			socket.send(buf)
 
-	 	if type == 5 :
-	 		sendMsgBroadcast(msg)
+	 	if type == 5 :#TODO ca ne marcheras pas
+	 		sendMsgBroadcast(msg.encode('utf-8'))
 
 
 def createProfile():

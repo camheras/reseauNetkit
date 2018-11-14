@@ -19,7 +19,7 @@ class User:  # associe une ip a un nickname
         self.nickname = name
         self.addr = addr[0]
         self.users = []  # Liste des User connus
-        self.ban = []  # Les bannis, on verifie ici avant de recevoir 
+        self.ban = []  # Les bannis, on verifie ici avant de recevoir
 
     def __str__(self):
         return ("(" + self.name + "@" + self.addr + ")")
@@ -49,7 +49,7 @@ class User:  # associe une ip a un nickname
 
         if str[0] < 3000 and str[0] < 4000:  # ips
             for ip in x[1].split(","):
-                users.append(ip)  # On rajoute les ip 
+                users.append(ip)  # On rajoute les ip
         if str[0] < 4000 and str[0] < 5000:  # pm
             if estBanni(sc.getsockeName()) == 0:
                 afficher(str[1])

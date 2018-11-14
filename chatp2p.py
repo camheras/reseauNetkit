@@ -142,21 +142,23 @@ def sendMsgBroadcast(msg):
 
 
 def init():
-    # creer socket qui ecoute
-    createServ()
-    if len(argv) == 2:
-        print("ip" + argv[0])
-        createServ()  # pour l'ecoute
-        # create socket pour client on l'appelle s
-        s.connect((argv[0], 1664))
-        s.send("HELLO")
+	#creer socket qui ecoute
+	createServ()
+	if len(argv) == 2:
+		print("ip "+argv[1])
+		#create socket pour client on l'appelle s
+		s = socket(AF_INET, SOCK_STREAM)
+		s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)		
+		s.connect((argv[1], 1664))
+		print(s.getsockname())
+		socks.append(s)
+		s.send("START")
 
-    if len(argv) == 1:
-        print ("Pas d'ip!")
-    else:
-        print("Nombres d'arguments incorects")
-        quit();
-
+	elif len(argv) == 1:
+		print ("Pas d'ip!")
+	else:
+		print("Nombres d'arguments incorects")
+		quit();
 
 def start():
     createProfile()

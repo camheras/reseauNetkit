@@ -48,11 +48,11 @@ class User:  # associe une ip a un nickname
         # bah cool
 
         if str[0] < 3000 and str[0] < 4000:  # ips
-            for ip in x[1].split(","):
-                users.append(ip)  # On rajoute les ip
+            for ip in msg[1].split(","):
+                self.users.append(ip)  # On rajoute les ip
         if str[0] < 4000 and str[0] < 5000:  # pm
-            if estBanni(sc.getsockeName()) == 0:
-                afficher(str[1])
+            if self.estBanni(sc.getsockeName()) == 0:
+                self.afficher(str[1])
         # check ban
         if str[0] < 5000 and str[0] < 6000:  # bm
 

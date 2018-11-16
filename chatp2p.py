@@ -159,38 +159,28 @@ def init():
 
 
 def start():
-    createProfile()
-    init()
-    data = ""
-    while 1:
-        if data == "exit":
-            break
+	createProfile()
+	init()
+	data = ""
+	
+	socks.append(stdin)
 
-        sc, addr = serv.accept()
-        lin, lout, lex = select([serv], [], [], 0.1)
-        print("aaa")
-        for s in lin:
-            if s == stdin:
-                data = stdin.readline().strip("\n")
-                print ("entree clavier : %s" % data)
-        for s in lout:
-            print("test")
-            d = s.recv(1024).decode('utf-8')
-            print(d)
-            handle(d, s)
-
-        if data == "quit":
-            quit()
-        elif data == "pm":
-            sendMsgBroadcast(arg[1], arg[2])
-        elif data == "bm":
-            sendMsg()
-        elif data == "ban":
-            print("ban")
-        elif data == "unban":
-            print("unban")
-        else:
-            print("la commande n'est pas reconnue")
+	while 1:
+		if data == "exit":
+			break
+			
+		lin, lout, lex =select(socks,[],[])
+		
+		for s in lin:
+			if s==stdin:
+				data = stdin.readline().strip("\n")
+				print ("entree clavier : %s" % data)
+				msg(data)
+			if s==serv:
+				print("test")
+				sc, addr = s.accept()
+				d = sc.recv(1024).decode("ascii")
+				print(d)
 
 
 start()

@@ -1,197 +1,253 @@
-#!/usr/bin/python
-##
-# TCP chat server
-# port 1664
-##
+# -*- coding: utf-8 -*-
 from socket import *
-from select import *
-from sys import argv
-from sys import stdin
+from select import select
 
-socks = []  # Pourquoi ?
-name = ""
-s = None
-serv = socket()
-nickname = name
-addr = ""
+class User:
+	def __init__(self,sc,addr,name):
+		self.nickname = name
+		self.name = name
+		self.sc = sc
+		self.addr = addr[0]
+
+	def __str__(self):
+		return(self.nickname+"	(" +self.name + "@" + self.addr + ")")	
+
+class Group:
+	def __init__(self,name,mod):
+		self.name = name
+		self.mod = mod
+		self.users = []
+		self.users.append(mod)
+		self.topic = "none"
+
+	def add_user(self,user):
+		self.users.append(user)
+
+	def __str__(self):
+		s = "Group : " + self.name + "\tMod : "
+		if self.mod == None:
+			s += "None"
+		else:
+			s += self.mod.name
+		s += "\t"+"Topic : "+self.topic+"\n"+str(len(self.users))+" members"+"\n"
+		for u in self.users:
+			s += str(u)
+		return(s)
+
+def send(client,paquet):
+	if len(paquet) > 255:
+		paquet = chr(255)+paquet
+		buf = paquet[:256].encode('utf-8')
+		client.send(buf)
+		send(client,paquet[256:])
+	else:	
+		paquet = chr(len(paquet))+paquet
+		buf = paquet.encode('utf-8')
+		client.send(buf)
+		
+
+def send_proto_packet(client):
+	td = "j1" + chr(0)
+	send(client,td)
+
+
+s = socket()
+s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+s.bind(('0.0.0.0',7326))
+s.listen(5)L3 MIAGE - 2018/2019
+
+serveurLance = True
+clientsCo = []
+groups = []
 users = []
-ban = []
 
-def estBanni(c):
-    for x in ban:
-        if x == c:
-            return 1
-    return 0
+while serveurLance:
+	coDemandees, wlist, xlist = select([s],[],[],0.05)
+	for co in coDemandees:
+		sc, addr = s.accept()
+		clientsCo.append(sc)
+		send_proto_packet(sc)
+#		print("%s %s est en ligne" % ((gethostbyaddr(addr[0])[0]),(gethostbyaddr(addr[0])[2])))
+		newUser = User(sc,(gethostbyaddr(addr[0])[2]),(gethostbyaddr(addr[0])[0]))
+	
+	clientsMsg = []
 
-def afficher():
-    print()
-
-def generateSocketClient():
-print()
-
-
-def handle( msg, sc):  # Traite et gere les string qui sont recus
-    str = msg.split("\001")
-    if str[0] < 1000 and str[0] < 2000:  # todo peut mieux faire start
-        sc = generateSocketClient()
-        sendMsg( sc, str[1], 2)
-        sendMsg( sc, " ", 3)
-
-    if str[0] < 2000 and str[0] < 3000:  # hello
-        print ()# bah cool
-
-    if str[0] < 3000 and str[0] < 4000:  # ips
-        for ip in msg[1].split(","):
-            users.append(ip)  # On rajoute les ip
-    if str[0] < 4000 and str[0] < 5000:  # pm
-        if estBanni(sc.getsockeName()) == 0:
-            print(str[1])
-    # check ban
-    if str[0] < 5000 and str[0] < 6000:  # bm
-        print("Un message est arrive en broadcast")
-
-# todo
-# check ban
-
-def sendMsg(socket, msg, type):  # Le 1229 c'est pas des erreurs destress
-    # Je ne suis pas sur de la syntaxe du send
-    if type == 1:
-        message = ""
-        message = 1229 + "\001" + nickname  # SEND START
-        print("send message :" + message)
-        buf = message.encode('utf-8')
-        socket.send(buf)
-
-    if type == 2:  # send nickname de l'interlocuteur, il faurait avoir mis dans le msg le nickname du receptioniste
-        message = ""
-        message = 2229 + "\001" + msg
-        print("send message :" + message)
-        buf = message.encode('utf-8')
-        socket.send(buf)
-
-    if type == 3:  # TODO
-        ips = ""
-        for x in users :
-            ips = x.addr + " ," + ips
-
-        message = (3229 + "\001" + ips)
-        print("send message :" + message)
-        buf = message.encode('utf-8')
-        socket.send(buf)
-
-    if type == 4:  # Send PM
-        message = ""
-        message = 4229 + "\001" + msg
-        print("send message :" + message)
-        buf = message.encode('utf-8')
-        socket.send(buf)
-
-    if type == 5:  # TODO ca ne marcheras pas
-        sendMsgBroadcast(msg.encode('utf-8'))
-
-
-def createProfile():
-    print("what's your name ?")
-    name = raw_input()
-    print("hello " + name)
-
-
-def isCorrectIp(ip):
-    print(ip)
-    ip = int(ip)
-    if ip <= 255 and ip >= 0:
-        return True
-    else:
-        quit()
-        return False
-
-
-def ban(user, ban):
-    if (user in ban):
-        print("deja blackliste")
-    else:
-        ban.append(user)
-        print (user.nickname + " avec l'ip " + user.addr + " a bien ete blackliste")
-
-
-def unban(user, ban):
-    if (user in ban):
-        ban.remove(user)
-        print (user.nickname + " avec l'ip " + user.addr + " est debloque")
-    else:
-        print("n'est pas bloque")
-
-
-def createServ():
-    serv.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-    serv.bind(('0.0.0.0', 1664))
-    serv.listen(5)
-
-
-def quit():
-    # quitte le serveur
-    exit()
-
-
-def sendMsgBroadcast(msg):
-    for s in socks:
-        print("Hey")
-        #sendMsg(s, msg)
-    print("ok")
-
-
-def init():
-	#creer socket qui ecoute
-    createServ()
-    if len(argv) == 2:
-		print("ip "+argv[1])
-		#create socket pour client on l'appelle s
-		s = socket(AF_INET, SOCK_STREAM)
-		s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-		s.connect((argv[1], 1664))
-		print(s.getsockname())
-		socks.append(s)
-		s.send("START")
-
-
-def msg(data):
-	if data == "quit":
-		quit()
-	elif data == "pm":
-		sendMsgBroadcast(arg[1],arg[2])
-	elif	data == "bm":
-		sendMsg()
-	elif	data == "ban":
-		print("ban")
-	elif	data == "unban":
-		print("unban")
+	try: 
+		clientsMsg, wlist, xlist = select(clientsCo,[],[],0.05)
+	except select.error:
+		print("connection error")
+		break
+	
 	else:
-		print("la commande n'est pas reconnue")
+		for client in clientsMsg:
+			for g in groups:
+				for u in g.users:
+					if u.sc == client:
+						currentGroup = g
+						currentUser = u
+					
+			data = client.recv(1024)
+			try:
+				msg = data.decode('utf-8')
+#				print(msg)
+			except:
+				send(client,"ecan't treat packet : decode error"+chr(0))
+				continue
+#deconnexion d'un client
+			if msg == "":
+				td = "dSign-off"+chr(1)+currentUser.name+" "+currentUser.addr+" just left"+chr(0)
+				for c in currentGroup.users:
+					if c != currentUser:
+						send(c.sc,td)
+				clientsCo.remove(currentUser.sc)
+				currentGroup.users.remove(currentUser)
+
+#paquet login
+			elif msg[1] == "a":
+				currentUser = newUser
+				send(client,"a" + chr(0))
+
+				groupName = (msg.split(chr(1)))[2]
+				groupMatch = False
+
+				for g in groups:
+					if groupName == g.name:
+						groupMatch = True
+						g.add_user(currentUser)
+						currentGroup = g
+				if groupMatch == False:
+					currentGroup = Group(groupName,currentUser)
+					groups.append(currentGroup)
+
+				td = "dStatus" + chr(1) + "You are now in group "+ groupName + chr(0)
+				send(client,td)
+
+				td = "dSign-in"+ chr(1) + currentUser.name + " (" + currentUser.addr + ") entered group" + chr(0)
+				for c in currentGroup.users:
+					if c != currentUser:
+						send(c.sc,td)
+						
+#paquet option
+			elif msg[1] == "h":
+#afficher groupes
+				if msg[2] == "w":
+					for g in groups:
+						if g.mod == None:
+							nn = "none"
+						else:
+							nn = g.mod.nickname
+						send(client,"ico"+chr(1)+"Group : " + g.name + " | Mod : "+nn+" | Topic : "+g.topic+chr(0))
+						for u in g.users:
+							send(client,"ico"+chr(1)+str(u)+chr(0))
+					
+#messages prives
+				elif msg[2] == "m":
+					dest = (msg[3:].split(" "))[0]
+					txt = msg[3+len(dest):-1]
+					td = "c"+currentUser.nickname+chr(1)+str(txt)+chr(0)
+					for c in currentGroup.users:
+						if dest.find(c.name)!= -1:
+							send(c.sc,td)
+#changement de groupe
+				elif msg[2] == "g":
+					if len(msg) < 6:
+						td = "dStatus"+chr(1)+"You are now in group "+currentGroup.name+chr(0)
+						send(client,td)
+					else:
+						groupName = (msg[3:].split(" "))[0]
+						groupName = groupName[1:-1]
+						newGroup = None
+						for g in groups:
+							if groupName.find(g.name)!= -1: 
+								newGroup = g
+						if newGroup == None:
+							newGroup = Group(str(groupName),currentUser)
+							groups.append(newGroup)
+						else:
+							newGroup.add_user(currentUser)
+						currentGroup.users.remove(currentUser)
+						if currentGroup.mod == currentUser:
+							currentGroup.mod = None
+						td = "dStatus"+chr(1)+"You are now in group "+str(groupName)+chr(0)
+						send(client,td)
+						td = "dDepart"+chr(1)+currentUser.nickname+" "+currentUser.addr+" just left"+chr(0)
+						for c in currentGroup.users:
+							send(c.sc,td)
+						
+	
+					
+#changement de pseudo
+				elif msg[2:6] == "name":
+					if len(msg) < 9:
+						td = "dName"+chr(1)+"Your nickname is "+currentUser.nickname+chr(0)
+						send(client,td)
+					else:
+						newName = str(msg[7:-1])
+						currentUser.nickname = newName
+						td = "dName"+chr(1)+currentUser.name+" changed nickname to "+currentUser.nickname+chr(0)
+						for c in currentGroup.users:
+							send(c.sc,td)
+										
+#changement de topic
+				elif msg[2:7] == "topic":
+					if currentUser == currentGroup.mod:
+						top = str(msg[8:-1])
+						currentGroup.topic = str(top)
+						
+						td = "dTopic"+chr(1)+currentUser.nickname+" changed the topic to "+str(top)+chr(0)
+						for c in currentGroup.users:
+							send(c.sc,td)
+					else:
+						td = "eSetting the topic is only for moderators."+chr(0)
+						send(client,td)
+#passage des droits moderateur
+				elif msg[2:6] == "pass":
+					if currentGroup.mod == None:
+						currentGroup.mod = currentUser
+						td = "dNotify"+chr(1)+"server just passed you moderation of "+currentGroup.name+chr(0)
+						send(client,td)
+						td = "dNotify"+chr(1)+"server has passed moderation to "+currentUser.nickname+chr(0)
+						for c in currentGroup.users:
+							if c != currentUser:
+								send(c.sc,td)
+					elif currentGroup.mod == currentUser:
+						currentGroup.mod = None
+						td = "dNotify"+chr(1)+currentUser.nickname+" abandoned his moderator rights"+chr(0)
+						for c in currentGroup.users:
+							send(c.sc,td)
+					else:
+						td = "ethere is already a moderator"
+						send(client,td)
+				
+#manuel
+				elif msg[2] == "?":
+					td = "dHelp"+chr(1)+"server supports following commands:"+chr(0)
+					send(client,td)
+                                        td = "dHelp"+chr(1)+"/w /m /g /name /topic /pass /q /?"+chr(0)
+					send(client,td)
+
+#commande inconnue
+				else:
+					send(client,"eUnknown command"+chr(0))
+				
+							
+	
+#paquet message ouvert
+			elif msg[1] == "b":
+				openMsg = msg[2:]
+				td = "b"+currentUser.nickname+chr(1)+openMsg+chr(0)
+				for c in currentGroup.users:
+					if c != currentUser:
+						send(c.sc,td)
+#paquet inconnu
+			else:
+				td = "eUnknown type of packet"
+				send(client,td)
+				
 
 
-def start():
-    createProfile()
-    init()
-    data = ""
 
-    socks.append(stdin)
-
-    while 1:
-        if data == "exit":
-            break
-
-        lin, lout, lex = select(socks, [], [])
-
-        for s in lin:
-            if s == stdin:
-                data = stdin.readline().strip("\n")
-                print ("entree clavier : %s" % data)
-                msg(data)
-            if s == serv:
-                print("test")
-                sc, addr = s.accept()
-                d = sc.recv(1024).decode("ascii")
-                print(d)
-
-
-start()
+for c in clientsCo:
+	c.close()
+s.close()
+	

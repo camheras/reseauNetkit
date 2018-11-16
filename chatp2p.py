@@ -156,7 +156,20 @@ def init():
 		socks.append(s)
 		s.send("START")
 
-
+def msg(data):
+	if data == "quit":
+		quit()
+	elif data == "pm":
+		sendMsgBroadcast(arg[1],arg[2])
+	elif	data == "bm":
+		sendMsg()
+	elif	data == "ban":
+		print("ban")
+	elif	data == "unban":
+		print("unban")
+	else:
+		print("la commande n'est pas reconnue")
+		
 
 def start():
 	createProfile()

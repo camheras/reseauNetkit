@@ -23,28 +23,28 @@ def estBanni(c):
             return 1
     return 0
 
-def afficher(self):
+def afficher():
     print()
 
-def generateSocketClient(self):
-    print()
+def generateSocketClient():
+print()
 
 
-def handle(self, msg, sc):  # Traite et gere les string qui sont recus
+def handle( msg, sc):  # Traite et gere les string qui sont recus
     str = msg.split("\001")
     if str[0] < 1000 and str[0] < 2000:  # todo peut mieux faire start
-        sc = self.generateSocketClient(self)
-        self.sendMsg(self, sc, str[1], 2)
-        self.sendMsg(self, sc, " ", 3)
+        sc = generateSocketClient()
+        sendMsg( sc, str[1], 2)
+        sendMsg( sc, " ", 3)
 
     if str[0] < 2000 and str[0] < 3000:  # hello
         print ()# bah cool
 
     if str[0] < 3000 and str[0] < 4000:  # ips
         for ip in msg[1].split(","):
-            self.users.append(ip)  # On rajoute les ip
+            users.append(ip)  # On rajoute les ip
     if str[0] < 4000 and str[0] < 5000:  # pm
-        if self.estBanni(sc.getsockeName()) == 0:
+        if estBanni(sc.getsockeName()) == 0:
             print(str[1])
     # check ban
     if str[0] < 5000 and str[0] < 6000:  # bm
@@ -167,8 +167,8 @@ def msg(data):
 		print("unban")
 	else:
 		print("la commande n'est pas reconnue")
-        
-        
+
+
 def start():
     createProfile()
     init()

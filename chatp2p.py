@@ -128,9 +128,9 @@ def sendMsg(socket, msg, type):  # Le 1229 c'est pas des erreurs destress
 
     if type == 5:  # TODO ca ne marcheras pas
 		message = "5229\\001" + msg
-        buf = message.encode('utf-8')
-		for x in socks
-        	x.send(buf)
+		buf = message.encode('utf-8')
+		for x in socks:
+			x.send(buf)
 
 def createProfile():
 	print("what's your name ?")

@@ -196,7 +196,7 @@ def msg(data):
     elif data == "users":
         print(str(users))
     elif data.split(" ")[0] == "unban":
-        ban(data.split(" ")[1])
+        unban(data.split(" ")[1])
     else:
         print("la commande n'est pas reconnue")
 

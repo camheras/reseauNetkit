@@ -25,13 +25,19 @@ def estBanni(c):
             return True
     return False
 
-
 def ban(ip):
     if (ip in listban):
         print("deja blackliste")
     else:
         listban.append(ip)
         print("l'ip " + ip + " a bien ete blackliste")
+
+def unban(ip):
+    if (ip in listban):
+        listban.remove(ip)
+	print ("reintegre")
+    else:
+        print("l'ip " + ip + " n'est pas blackliste")
 
 def generateSocketClient(ip):  # return un socket qui pointe vers l'ip
     s = socket(AF_INET, SOCK_STREAM)
@@ -72,13 +78,13 @@ def handle(msg, ip, socket):  # Traite et gere les string qui sont recus
 
     elif s1 > 4000 and s1 < 5000:  # PM
         print("recoit PM")
-        if estBanni(ip) == 0:
+        if ip not in listban: 
             print("pm recu : " + k1[1])
 
 
     elif s1 > 5000 and s1 < 6000:  # BM
         print("recoit bm : ")
-        if estBanni(ip) == 0:
+        if (ip in listban):
             print("bm recu : " + k1[1])
     else:
         print("erreur")
